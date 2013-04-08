@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Reattach a screen session:
+
+screen -rdaA
+
+
+# -r  resume a screen session
+# -d  detach first if necessery (when session is attached in different console)
+# -a  include all capabilities in each window's termcap
+# -A  adapt the sizes of all windows to the size of the current terminal
+

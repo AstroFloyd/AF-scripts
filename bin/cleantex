@@ -1,0 +1,36 @@
+#!/bin/bash
+
+##  Clean LaTeX byproducts
+##  AstroFloyd, 2005
+
+
+if [ ${#} -eq 1 ] 
+then
+    rm -f ${1}.toc
+    rm -f ${1}.out
+    rm -f ${1}.log
+    rm -f ${1}.aux
+    rm -f ${1}.blg
+    
+    rm -f ${1}.nav
+    rm -f ${1}.snm
+    
+else
+    
+    # No questions asked:
+    rm -f *.toc
+    rm -f *.out
+    rm -f *.log
+    rm -f *.aux
+    rm -f *.blg
+    
+    rm -f *.nav
+    rm -f *.snm
+    
+    # Do ask:
+    rm -i *.bbl
+    rm -i *.dvi
+    rm -i *.ps
+    rm -i *.pdf
+fi
+

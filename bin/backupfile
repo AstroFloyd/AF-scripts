@@ -1,0 +1,32 @@
+#!/bin/bash
+
+##  Backupfile:
+##    Copies a file into a new name with an extension consisting of
+##    the file's timestamp (file.yymmdd_hhmmss) so that the original
+##    can be edited without loss of data
+##  AstroFloyd, 2008-06-04
+
+if [ ${#} -eq 1 ]
+then
+    origfile=${1}
+    
+    if [ ! -e ${origfile} ]
+    then
+	echo -e "Backupfile:  File not found: ${origfile}"
+	exit 1
+    fi
+    
+    # Get the backup file name:
+    #ext=`date +%y%m%d_%H%M%S`  # Today's date
+    ext=`ls -lGg --time-style="+ %Y%m%d_%H%M%S" ${origfile} |awk '{print $4}'`  # Modification date of ${origfile}
+    bakfile=${origfile}.${ext}
+    
+    echo "Backing up ${origfile} as ${bakfile}:"
+    cp -ivp ${origfile} ${bakfile}
+else
+    echo -e "\n  Backupfile: copies a file into a new name (file.yymmdd_hhmmss) using the file's"
+    echo -e "                timestamp, so that the original can be edited without loss of data.\n"
+    echo -e "              syntax:  backupfile <filename>\n"
+    exit 2
+fi
+

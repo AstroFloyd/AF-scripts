@@ -1,0 +1,15 @@
+#!/bin/bash
+
+## gvs: open multiple files with gv
+## AstroFloyd, 2009-03-10
+
+count=1
+for psfile in `ls ${@}`
+do
+    echo "Opening file ${count}: ${psfile}..."
+    gv ${psfile} &
+    #gv --scale=-2 ${psfile} &
+    sleep 0.2
+    let "count+=1"
+done
+

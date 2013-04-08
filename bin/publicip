@@ -1,0 +1,8 @@
+#! /bin/bash
+
+## Print your current public IP address
+## AstroFloyd, 2006
+
+# wget -q http://www.networksecuritytoolkit.org/nst/cgi-bin/ip.cgi -O -
+curl --connect-timeout 1 -s checkip.dyndns.org|sed -e 's/.*Current IP Address: //' -e 's/<.*$//'
+

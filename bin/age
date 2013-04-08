@@ -1,0 +1,9 @@
+#!/bin/bash
+
+##  Print the age of a file in days
+##    From: http://superuser.com/questions/169858
+##  AstroFloyd, 2013-03-02
+
+stat=$(stat --printf="%Y %F\n" "$1")
+echo "The ${stat#* } '$1' is $((($(date +%s) - ${stat%% *})/86400)) days old."
+

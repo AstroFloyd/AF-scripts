@@ -1,0 +1,39 @@
+#! /bin/bash
+
+##  knmi_weather:
+##    Download weather observations and predictions from the KNMI 
+##    (Dutch Royal Meteorological Institute) to screen
+##    AstroFloyd, Mar 2006; Feb 2012
+
+
+echo -en "\nRetrieved on "
+date
+
+echo -e "===============================================================================\n"
+
+
+echo -e "WAARNEMINGEN:\n"
+#echo -e "   Station  Weer        Temp Chill  RV Wind ws.  Zicht   Druk"
+#echo -e "                         °C   °C    %   ri  m/s    m     hPa\n"
+
+rm -f ~/.knmi_tabel_10min_data.html
+wget -cq ftp://ftp.knmi.nl/pub_weerberichten/tabel_10min_data.html -O ~/.knmi_tabel_10min_data.html
+#cat ~/.knmi_tabel_10min_data.html |lynx -stdin -dump  # All stations
+#cat ~/.knmi_tabel_10min_data.html |lynx -stdin -dump |grep -E 'Waarnemingen|Station|RV|Druk|De Bilt'  # Only for De Bilt
+cat ~/.knmi_tabel_10min_data.html |lynx -stdin -dump |grep -E 'Waarnemingen|Station|RV|Druk|Deelen|Volkel'  # For Deelen and Volkel
+
+
+echo -e "\n===============================================================================\n"
+
+
+wget -cq ftp://ftp.knmi.nl/pub_weerberichten/weeroverzicht.txt -O -
+
+
+echo -e "\n===============================================================================\n"
+
+
+wget -cq ftp://ftp.knmi.nl/pub_weerberichten/middellange_termijn_verwachting.txt -O -
+
+
+echo -e "\n===============================================================================\n"
+

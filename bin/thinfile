@@ -1,0 +1,34 @@
+#!/bin/bash
+
+##  Thin the contents of a data file (i.e., save every n-th line), except its header
+##  AstroFloyd, 2008-01-31
+
+
+echo ""
+if [ ${#} -le 2 ]; then
+    echo -e "  thinfile:  thin out the contents of a data file"
+    echo -e "  syntax:    thinfile <header> <thin factor> <infile> [<outfile>]"
+    echo -e "             header: number of lines at the top, not to be thinned"
+    echo -e "             thin factor: save every <thin factor>-th line of the rest of the file"
+    echo -e "             in/outfile: if outfile is not given, infile will be overwritten"
+else
+    head=${1}
+    fact=${2}
+    infile=${3}
+    outfile=${4}
+    
+    echo -e "  Input file:  \t"${infile}":  \t"`wc -l ${infile} |awk '{print $1}'`" lines"
+    
+    if [ ${#} -lt 4 ]; then
+        #outfile=${infile}            # Overwrite input file (!)
+        outfile="${infile}_thinned"  # Do not overwrite input file
+    fi
+    
+    perl -wne 'print if ($.<='${head}' || ($.-'${head}')%'${fact}'<=1e-5)' ${infile} > .temporary_thinfile
+    mv -f .temporary_thinfile ${outfile}
+    
+    echo -e "  Output file: \t"${outfile}":  \t"`wc -l ${outfile} |awk '{print $1}'`" lines"
+
+fi
+echo ""
+
