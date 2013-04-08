@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Am I in a screen session?
+
+if [ ${TERM} == "screen" ]
+then
+    echo -e "\E[1;32mYes\E[0m, you are in a \E[1;32m${TERM}\E[0m session"
+else
+    echo -e "\E[1;31mNo\E[0m, you are in a \E[1;31m${TERM}\E[0m session"
+fi
+
+# Should return "screen" if in screen, "xterm" or similar if not
+
