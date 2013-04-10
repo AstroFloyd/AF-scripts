@@ -1,0 +1,23 @@
+#!/bin/bash
+
+##  Repeat a command multiple times, with a pause between them
+##  AstroFloyd, 2008
+
+if [[ ${#} < 3 ]]; then
+    echo -e "\n  ${0}: insufficient number of parameters:"
+    echo -e "    Syntax: ${0} <number of times> <pause between calls (s)> <command line>\n"
+else
+    number=${1}
+    shift
+    pausetime=${1}
+    shift
+    
+    for (( i=1; i <= ${n}; i++ )); do
+	${@}
+	if [[ ${i} < ${number} ]]; then
+	    sleep ${pausetime}
+	fi
+    done
+fi
+
+
