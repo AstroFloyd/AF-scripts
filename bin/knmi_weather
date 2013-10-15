@@ -19,8 +19,8 @@ echo -e "WAARNEMINGEN:\n"
 rm -f ~/.knmi_tabel_10min_data.html
 wget -cq ftp://ftp.knmi.nl/pub_weerberichten/tabel_10min_data.html -O ~/.knmi_tabel_10min_data.html
 #cat ~/.knmi_tabel_10min_data.html |lynx -stdin -dump  # All stations
-#cat ~/.knmi_tabel_10min_data.html |lynx -stdin -dump |grep -E 'Waarnemingen|Station|RV|Druk|De Bilt'  # Only for De Bilt
-cat ~/.knmi_tabel_10min_data.html |lynx -stdin -dump |grep -E 'Waarnemingen|Station|RV|Druk|Deelen|Volkel'  # For Deelen and Volkel
+#cat ~/.knmi_tabel_10min_data.html |lynx -stdin -dump |grep -E 'Waarnemingen|Station|RV|Wind|Zicht|Druk|hPa|De Bilt'  # Only for De Bilt
+cat ~/.knmi_tabel_10min_data.html |lynx -stdin -dump |grep -E 'Waarnemingen|Station|RV|Wind|Zicht|Druk|hPa|Deelen|Volkel'  # For Deelen and Volkel
 
 
 echo -e "\n===============================================================================\n"

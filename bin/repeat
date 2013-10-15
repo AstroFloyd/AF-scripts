@@ -4,19 +4,20 @@
 ##  AstroFloyd, 2008
 
 if [[ ${#} < 3 ]]; then
-    echo -e "\n  ${0}: insufficient number of parameters:"
-    echo -e "    Syntax: ${0} <number of times> <pause between calls (s)> <command line>\n"
+    echo -e "\n  Syntax:  repeat <number of times> <pause between calls (s)> <command line>\n"
 else
     number=${1}
     shift
     pausetime=${1}
     shift
     
-    for (( i=1; i <= ${n}; i++ )); do
+    let i=1
+    while [[ ${i} -le ${number} ]]; do
 	${@}
 	if [[ ${i} < ${number} ]]; then
 	    sleep ${pausetime}
 	fi
+	(( i=i+1 ))
     done
 fi
 
