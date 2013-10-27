@@ -1,0 +1,82 @@
+#!/bin/bash
+
+##  Calibrate a photo, applying dark, bias and flat-field corrections
+##  2013-10-27
+##  Copyright (c) 2013 AstroFloyd - astrofloyd.org
+
+
+if [[ ${#} -ne 3 && ${#} -ne 4 ]]
+then
+    echo -e "\nCalibrate a photo, applying dark, bias and flat-field corrections"
+    echo -e "  Syntax: ${0} <light frame> <dark frame> <flat field> [<bias frame>]"
+    echo -e "  If a bias frame is not provided, the dark frame is used to calibrate the flat field\n"
+    
+    echo -e "  light frame:  actual photo with desired focal length, ISO and exposure"
+    echo -e "  dark frame:   cap on lens, same ISO, same exposure as light frame"
+    echo -e "  flat field:   same f as light frame, unfocussed on uniform, white background"
+    echo -e "  bias frame:   cap on lens, same ISO as light frame, shortest exposure"
+    echo ""
+    exit 1
+fi
+
+if [ ! -e .calibrate_photo_\*.jpg ]
+then
+    echo -e "\nSome existing calibration files were found.  I will use them."
+    echo "To clean this directory, do:  rm -f .calibrate_photo_*.jpg"
+fi
+
+# File names:
+light=".calibrate_photo_light.jpg"
+dark=".calibrate_photo_dark.jpg"
+flat=".calibrate_photo_flat.jpg"
+bias=".calibrate_photo_bias.jpg"
+
+flat_bias=".calibrate_photo_flat_bias.jpg"
+light_dark=".calibrate_photo_light_dark.jpg"
+light_flat=".calibrate_photo_light_flat.jpg"
+#light_final="calibrated_photo.jpg"
+light_final=`echo ${1} | sed -e 's/\(\..*\)/_calibrated\1/'`
+
+# Copy the source files using convert
+# Ensure that the orientation is the same for all of them
+echo -e "\nCopying and rotating originals..."
+convert -orient Top-left ${1} ${light}
+if [ ! -e ${dark} ]; then convert -orient Top-left ${2} ${dark}; fi
+if [ ! -e ${flat} ]; then convert -orient Top-left ${3} ${flat}; fi
+if [ ! -e ${flat} ]
+then
+    if [[ ${#} -eq 4 ]]
+    then
+	convert -orient Top-left ${4} ${bias}
+    else
+	cp -f ${dark} ${bias}
+    fi
+fi
+
+# Calibrate flat frame - subtract bias from the flat frame:
+if [ ! -e ${flat_bias} ]
+then 
+    echo "Correcting bias in flat field..."
+    composite ${flat} -compose subtract ${bias} ${flat_bias}
+fi
+    
+# Apply calibration frames:
+#   subtract the dark from the light frame:
+echo "Applying dark calibration..."
+composite ${light} -compose subtract ${dark} ${light_dark}
+
+#   divide the result by the flat frame:
+echo "Applying flat-field calibration..."
+composite ${light_dark} -compose divide ${flat_bias} ${light_flat}
+
+#   normalise the result:
+echo "Normalising the result..."
+convert ${light_flat} -auto-level ${light_final}
+
+
+# Clean up
+#echo "Cleaning up..."
+#rm -f .calibrate_photo_*.jpg
+
+echo -e "Calibration completed.\nCalibrated image saved as ${light_final}\n"
+
