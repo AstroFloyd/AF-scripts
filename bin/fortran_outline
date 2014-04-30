@@ -1,0 +1,34 @@
+#!/bin/bash
+
+##  Give a simple outline of a Fortran source file by grepping for
+##  'program', 'subroutine', etc
+##  AF, 2013-09-01: initial version
+##  AF, 2014-04-30: added EoF, "line"
+
+
+if [ ${#} -eq 0 ]
+then
+    program=`echo ${0} |sed -e 's/^.*\///'`
+    echo -e "\n  Syntax:  ${program}  <Fortran source file(s)>\n"
+    exit 1
+fi
+
+options=`ls -drt ${@}`
+
+for file in ${options}
+do
+    echo -e "\n\E[1;34m${file}:\E[0m"
+    grep -Enwi \
+	'^ *program|^ *function|^ *subroutine|^ *module' \
+	${file} \
+	| sed -e 's/^[0-9]*:/line &\t/' \
+	-e 's/program\|function\|subroutine\|module/&\t/' \
+	| grep -Ewi --colour=auto 'program|function|subroutine|module'
+    
+    wc -l ${file} \
+	| awk '{printf "%d:end of file",$1}' \
+	| sed -e 's/^[0-9]*:/line &\t/' \
+	| grep -Ewi --colour=auto 'end of file'
+done
+
+echo
