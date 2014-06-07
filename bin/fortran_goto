@@ -1,0 +1,32 @@
+#!/bin/bash
+
+##  Outline goto and continue statements in a Fortran source file using grep
+##  AF, 2014-06-07: initial version, cloned from fortran_outline
+
+
+if [ ${#} -eq 0 ]
+then
+    program=`echo ${0} |sed -e 's/^.*\///'`
+    echo -e "\n  Syntax:  ${program}  <Fortran source file(s)>\n"
+    exit 1
+fi
+
+options=`ls -drt ${@}`
+
+for file in ${options}
+do
+    echo -e "\n\E[1;34m${file}:\E[0m"
+    grep -Enwi \
+	'^ *program|^ *function|^ *subroutine|^ *module| *goto| *go to| *continue|^ *[0-9]+ ' \
+	${file} \
+	| sed -e 's/^[0-9]*:/line &\t/' \
+	-e 's/program\|function\|subroutine\|module\|continue/&\t /' \
+	| grep -Ewi --colour=auto 'program|function|subroutine|module|goto *[0-9]+|go to *[0-9]+| *[0-9]+ *continue| *[0-9]+ '
+    
+    wc -l ${file} \
+	| awk '{printf "%d:end of file",$1}' \
+	| sed -e 's/^[0-9]*:/line &\t/' \
+	| grep -Ewi --colour=auto 'end of file'
+done
+
+echo
