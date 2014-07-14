@@ -1,0 +1,72 @@
+#!/bin/bash
+
+##  PDFopt: optimise a PDF file (e.g. when produced by PDFLaTeX) while preserving 
+##          its metadata
+##  Requires ghostscript or pdf2ps/ps2pdf and pdftk.  The metadata takes ~1kb.
+##  
+##  2014-07-14, AstroFloyd - astrofloyd.org
+
+
+if [[ ${#} -lt 1 || ${#} -gt 2 ]]
+then
+    command=`echo ${0} |sed -e 's/^.*\///'`  # Strip path
+    echo -e "\n\E[1m  Syntax:  \E[0m${command}  <infile.pdf> [<outfile.pdf>]\n"
+    exit 1
+fi
+
+
+infile=${1}
+if [[ ${#} -eq 2 ]]
+then
+    outfile=${2}
+else
+    outfile=`echo ${1} | sed -e 's/\.pdf/_opt\.pdf/'`
+fi
+
+echo "Optimising ${infile} -> ${outfile} ..."
+
+# Save metadata:
+pdftk ${infile} dump_data_utf8 > .pdfopt_metadata.txt
+
+
+# Optimise the PDF file using ghostscript:
+# Mostly text document: 93kb -> 66kb (-29%); 0.80s
+# PDF presentation (lots of graphics): 8.5Mb -> 4.1Mb (-52%); 4.3s
+#   * minor changes in character spacing (few characters)
+#   * some decrease in quality of bitmap graphics (mainly colour shifts); reading small print in bitmap is ok
+#   * keeps (external) hyperlinks
+#gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 -dNOPAUSE -dQUIET -dBATCH -sOutputFile=.pdfopt_temp.pdf ${infile}
+
+
+# Optimise the PDF file using pdf2ps/ps2pdf:
+# Mostly text document: 93kb -> 55kb (-41%); 1.33s
+# PDF presentation (lots of graphics): 8.5Mb -> 2.7Mb (-69%); 29.4s
+#   * substantial change in character spacing (many characters, line spacing)
+#   * noticeable decrease in quality of bitmap graphics (pixellisation, colours, ...); hard to read small print in bitmap
+#   * removes (external) hyperlinks
+pdf2ps ${infile} .pdfopt_file.ps
+ps2pdf -dPDFSETTINGS=/ebook -dCompatibilityLevel=1.5 .pdfopt_file.ps .pdfopt_temp.pdf
+
+
+# Copy the metadata into the new file:
+pdftk .pdfopt_temp.pdf update_info_utf8 .pdfopt_metadata.txt output ${outfile}
+
+
+# Copy the date stamp from the old to the new file:
+touch -r ${infile} ${outfile}
+
+
+# Report on the result:
+insize=`stat -c "%s" ${infile}`
+outsize=`stat -c "%s" ${outfile}`
+
+echo -en "${infile}:     \t"
+ls -lh ${infile} |awk '{print $5}'
+echo -en "${outfile}: \t"
+ls -lh ${outfile} |awk '{print $5}'
+echo "${insize} ${outsize}" |awk '{printf "File size decreased by %0.1f%%\n",(1-$2/$1)*100}'
+
+
+# Clean up:
+rm -f .pdfopt_*
+
