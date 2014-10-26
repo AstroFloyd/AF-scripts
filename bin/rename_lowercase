@@ -1,0 +1,14 @@
+#!/bin/bash
+
+##  Rename files to lower case
+##  AF, 2014-10-26
+
+for infile in `ls ${@}`
+do
+    outfile=`echo ${infile} | sed -e 's/\(.*\)/\L\1/'`
+    if [ ${infile} != ${outfile} ]
+    then
+	echo "${infile} -> ${outfile}"
+	mv -i ${infile} ${outfile}
+    fi
+done
