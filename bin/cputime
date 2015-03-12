@@ -1,0 +1,11 @@
+#!/bin/bash
+
+##  Print CPU time of a process = Wall time * CPU use
+##  Can produce rubbish (as well as timing) if process used StdErr
+##  AstroFLoyd, 2015-03-12
+
+/usr/bin/time -f "%e %P" ${@} 2> ~/.cputime_tmpfile
+cat ~/.cputime_tmpfile |grep -v '%' 1>&2  # Print stdErr output
+cat ~/.cputime_tmpfile |grep '%' |sed 's/%//g' |awk '{printf "\nTiming:\n  Wall time:  %.2f s\n  CPU time:   %.2f s\n  CPU used:   %d%\n\n", $1, $1*$2/100.0, $2}'
+rm -f ~/.cputime_tmpfile &> /dev/null
+
