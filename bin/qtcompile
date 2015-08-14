@@ -1,0 +1,12 @@
+#!/bin/bash
+
+##  Run qmake and make to compile a Qt project
+##  AstroFloyd, 2015-08-12
+
+# Use Qt5:
+/usr/lib64/qt5/bin/qmake -r -spec linux-g++ ${@}
+
+
+# Make:
+make -j6
+
