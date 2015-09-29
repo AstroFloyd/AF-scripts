@@ -1,0 +1,29 @@
+#!/bin/bash
+
+##  Print the text contents of a .docx file to stdout
+##  AF, 2015-09-29, based on http://stackoverflow.com/questions/1184747/
+
+
+if [ ${#} -le 0 ]
+then
+    command=`echo ${0} |sed -e 's/^.*\///g'`  # Remove path
+    echo "Print the text contents of a MS Word .docx file to stdout"
+    echo "Syntax:  ${command} <docx file>"
+    exit
+fi
+
+for file in `ls ${@}`
+do
+    if [ ${#} -gt 1 ]; then echo -e "\n\n${file}:"; fi
+    unzip -p ${file} \
+	| grep '<w:t' \
+	| sed 's/<[^<]*>/\n/g' \
+	| grep -v '^[[:space:]]*$'
+done
+
+
+# 1) unzip the .docx file
+# 2) grep lines with text
+# 3) remove tags
+# 4) grep out empty lines
+
