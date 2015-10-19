@@ -1,0 +1,10 @@
+#!/bin/bash
+
+##  Clean up a Qt source directory
+##  AstroFloyd, 2015-10-19
+
+make clean
+rm -fv Makefile
+rm -fv moc_*
+rm -fv *.o
+
