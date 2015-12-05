@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# pdf2png: convert a pdf figure to png using convert
+# MvdS, 2015-12-03
+
+command=`echo ${0} |sed -e 's/^.*\///g'`  # Remove path
+
+if [[ ${#} -lt 1 || ${#} -gt 2 ]]
+then
+    echo "Syntax:  ${command} <input pdf file> [<output png file>]"
+    exit
+fi
+
+infile=${1}
+outfile=`echo ${infile} | sed -e 's/\.pdf/\.png/g'`
+if [ ${#} -eq 2 ]
+then
+    outfile=${2}
+fi
+
+# Check whether input is pdf:
+echo ${infile} | grep -i "\.pdf$" &> /dev/null
+if [ ${?} != 0 ]
+then
+    echo -e "\n  ${command}  \E[1;31mError: the input file must be a .pdf file, aborting...\E[0m\n" 1>&2
+    exit 1
+fi
+
+# Check whether input exists:
+if [ ! -e ${infile} ]
+then
+    echo -e "\n  ${command}  \E[1;31mError: the input file doesn't exist, aborting...\E[0m\n" 1>&2
+    exit 1
+fi
+
+# Check whether output is png:
+echo ${outfile} | grep -i "\.png$" &> /dev/null
+if [ ${?} != 0 ]
+then
+    echo -e "\n  ${command}  \E[1;31mError: the output file must be a .png file, aborting...\E[0m\n" 1>&2
+    exit 1
+fi
+
+# Check for input file names equal to output file names:
+if [ ${infile} == ${outfile} ]; then
+    echo -e "\n   ${command}  \E[1;31mError:  input file name and output file name are identical, aborting...\E[0m\n"
+    exit 1
+fi
+
+
+
+echo "Converting ${infile} to ${outfile}..."
+convert -density 150 ${infile} ${outfile}
+
+
+
+
+#pdftocairo -png ${@}  # Produces larger file

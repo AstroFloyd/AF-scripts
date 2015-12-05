@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# pdf2pngs: batch convert multiple pdf figures to png using pdf2png
+# MvdS, 2015-12-03 - taken from eps2pdfs
+
+
+for pdffile in `ls ${@}`
+do
+    pdf2png ${pdffile} 
+done
+
